@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-
+import { ResizeBarComponent } from '../resize-bar/resize-bar.component';
 @Component({
   selector: 'app-window',
   standalone: true,
-  imports: [],
+  imports: [ResizeBarComponent],
   templateUrl: './window.component.html',
   styleUrl: './window.component.scss'
 })

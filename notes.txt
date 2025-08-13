@@ -1,2 +1,0 @@
-tenemos un sistema de ventanas tal vez controlado con un simple z-index.
-ahora, me doy cuenta de que, el backend y las herramientas externas que en mi mente parecen ofuscadas, estan así por simple falta de practica, porque modeling en el frontend me parece super sencillo, supongo que es una cuestion de, saber a que estoy apuntando. por que no usar el sistema de comandos en el backend y ya esta?

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 //Components
 import { ResizeBarComponent } from '../resize-bar/resize-bar.component';
 //UTILS 
-import { toPixels } from '../../shared/utils/units-conversion';
+import { toPixels, toPercentage } from '../../shared/utils/units-conversion';
 //INterface
 import { CurrentSize } from '../resize-bar/resize-bar.component';
 
@@ -16,21 +16,29 @@ import { CurrentSize } from '../resize-bar/resize-bar.component';
 })
 export class WindowComponent {
   width = signal<number>(toPixels(60));
+  height = signal<number>(toPixels(60, window.innerHeight));
 
   constructor(@Host() public hostElement: ElementRef){
     effect(() => {
-      // Obtenemos el elemento nativo del DOM.
       const el = this.hostElement.nativeElement;
-      // Aplicamos el valor del signal al estilo 'width'.
-      // Usamos el método `width()` para obtener el valor actual del signal.
-      el.style.width = `${this.width()}px`;
+      el.style.width = `${toPercentage(this.width())}%`;
+    });
+    effect(() => {
+      const el = this.hostElement.nativeElement;
+      el.style.height = `${toPercentage(this.height(), window.innerHeight)}%`;
     });
   }
   
   getCurrentWidth = () => this.hostElement.nativeElement.getBoundingClientRect().width;
+  getCurrentHeight = () => this.hostElement.nativeElement.getBoundingClientRect().height;
   
   handleUpdateCurrentWidth(value:CurrentSize){
-    this.width.set(value.width);
+    if (value.width){
+      this.width.set(value.width);
+    }
+    if (value.height){
+      this.height.set(value.height);
+    }
     console.log("handleUpdateCurrentWidth");
   }
 }

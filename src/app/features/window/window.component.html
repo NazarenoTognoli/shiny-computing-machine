@@ -10,10 +10,16 @@
             <ng-content></ng-content>
         </div>
     </div>
-    <app-resize-bar class="col col-3"></app-resize-bar>    
+    <app-resize-bar 
+        class="col col-3"
+        [elementCurrentSize]="getCurrentWidth"
+        (updateCurrentSize)="handleUpdateCurrentWidth($event)">
+    </app-resize-bar>    
 </div>
 <div class="row row-3">
     <app-resize-bar class="col col-1"></app-resize-bar>
-    <app-resize-bar class="col col-2"></app-resize-bar>
+    <app-resize-bar 
+        class="col col-2">
+    </app-resize-bar>
     <app-resize-bar class="col col-3"></app-resize-bar>
 </div>

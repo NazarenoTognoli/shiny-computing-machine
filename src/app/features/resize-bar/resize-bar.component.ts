@@ -46,6 +46,9 @@ export class ResizeBarComponent {
   notifyCurrentSizeChange(value:CurrentSize){
     this.updateCurrentSize.emit(value);
   }
+  //element.style.left = `calc(25% - ${discrepancyToSubtract}%)`; 25% is default value of property
+  //leftProperty.width = element.offsetWidth - rightProperty.discrepancy / 100 * container.offsetWidth;
+  //leftProperty.discrepancy = leftProperty.width / container.offsetWidth * 100 - 50;
 
   init:Init = {
     clientX: 0,
@@ -64,7 +67,7 @@ export class ResizeBarComponent {
       clientX: event.clientX,
       clientY: event.clientY,
       offsetWidth: this.elementCurrentWidth()(),
-      offsetHeight: this.elementCurrentHeight()(),  
+      offsetHeight: this.elementCurrentHeight()(),
     }
     
     

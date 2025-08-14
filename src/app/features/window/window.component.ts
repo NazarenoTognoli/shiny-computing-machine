@@ -39,7 +39,6 @@ export class WindowComponent {
     if (value.height){
       this.height.set(value.height);
     }
-    console.log("handleUpdateCurrentWidth");
   }
 }
 /*

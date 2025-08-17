@@ -1,41 +1,37 @@
 <div class="row row-1">
     <app-resize-bar 
         class="col col-1"
-        [elementCurrentHeight]="getCurrentHeight"
-        [elementCurrentWidth]="getCurrentWidth"
-        [config]="{
-            y:{active:true, backward:true}, 
-            x:{active:true, backward:true},}"
-        (updateCurrentSize)="handleUpdateCurrentWidth($event)">
+        [config]="configRow1Col1"
+        [ctx]="ctx()"
+        (onMouseDownOutput)="handleOnMouseDownOutput($event)"
+        (onMouseMoveOutput)="handleOnMouseMoveOutput($event)"
+        (onMouseUpOutput)="handleOnMouseUpOutput($event)">
     </app-resize-bar>
     <app-resize-bar 
         class="col col-2"
-        [elementCurrentHeight]="getCurrentHeight"
-        [elementCurrentWidth]="getCurrentWidth"
-        [config]="{
-            y:{active:true, backward:true}, 
-            x:{active:false, backward:false},}"
-        (updateCurrentSize)="handleUpdateCurrentWidth($event)">
+        [config]="configRow1Col2"
+        [ctx]="ctx()"
+        (onMouseDownOutput)="handleOnMouseDownOutput($event)"
+        (onMouseMoveOutput)="handleOnMouseMoveOutput($event)"
+        (onMouseUpOutput)="handleOnMouseUpOutput($event)">
     </app-resize-bar>
     <app-resize-bar 
         class="col col-3"
-        [elementCurrentHeight]="getCurrentHeight"
-        [elementCurrentWidth]="getCurrentWidth"
-        [config]="{
-            y:{active:true, backward:true}, 
-            x:{active:true, backward:false},}"
-        (updateCurrentSize)="handleUpdateCurrentWidth($event)">
+        [config]="configRow1Col3"
+        [ctx]="ctx()"
+        (onMouseDownOutput)="handleOnMouseDownOutput($event)"
+        (onMouseMoveOutput)="handleOnMouseMoveOutput($event)"
+        (onMouseUpOutput)="handleOnMouseUpOutput($event)">
     </app-resize-bar>
 </div>
 <div class="row row-2">
     <app-resize-bar 
         class="col col-1"
-        [elementCurrentHeight]="getCurrentHeight"
-        [elementCurrentWidth]="getCurrentWidth"
-        [config]="{
-            y:{active:false, backward:false}, 
-            x:{active:true, backward:true},}"
-        (updateCurrentSize)="handleUpdateCurrentWidth($event)">
+        [config]="configRow2Col1"
+        [ctx]="ctx()"
+        (onMouseDownOutput)="handleOnMouseDownOutput($event)"
+        (onMouseMoveOutput)="handleOnMouseMoveOutput($event)"
+        (onMouseUpOutput)="handleOnMouseUpOutput($event)">
     </app-resize-bar>
     <div class="col col-2">
         <div class="core">
@@ -44,39 +40,36 @@
     </div>
     <app-resize-bar 
         class="col col-3"
-        [elementCurrentWidth]="getCurrentWidth"
-        [config]="{
-            y:{active:false, backward:false}, 
-            x:{active:true, backward:false},}"
-        (updateCurrentSize)="handleUpdateCurrentWidth($event)">
+        [config]="configRow2Col3"
+        [ctx]="ctx()"
+        (onMouseDownOutput)="handleOnMouseDownOutput($event)"
+        (onMouseMoveOutput)="handleOnMouseMoveOutput($event)"
+        (onMouseUpOutput)="handleOnMouseUpOutput($event)">
     </app-resize-bar>    
 </div>
 <div class="row row-3">
     <app-resize-bar 
         class="col col-1"
-        [elementCurrentHeight]="getCurrentHeight"
-        [elementCurrentWidth]="getCurrentWidth"
-        [config]="{
-            y:{active:true, backward:false}, 
-            x:{active:true, backward:true},}"
-        (updateCurrentSize)="handleUpdateCurrentWidth($event)">
+        [config]="configRow3Col1"
+        [ctx]="ctx()"
+        (onMouseDownOutput)="handleOnMouseDownOutput($event)"
+        (onMouseMoveOutput)="handleOnMouseMoveOutput($event)"
+        (onMouseUpOutput)="handleOnMouseUpOutput($event)">
     </app-resize-bar>
     <app-resize-bar 
         class="col col-2"
-        [elementCurrentHeight]="getCurrentHeight"
-        [elementCurrentWidth]="getCurrentWidth"
-        [config]="{
-            y:{active:true, backward:false}, 
-            x:{active:false, backward:false},}"
-        (updateCurrentSize)="handleUpdateCurrentWidth($event)">
+        [config]="configRow3Col2"
+        [ctx]="ctx()"
+        (onMouseDownOutput)="handleOnMouseDownOutput($event)"
+        (onMouseMoveOutput)="handleOnMouseMoveOutput($event)"
+        (onMouseUpOutput)="handleOnMouseUpOutput($event)">
     </app-resize-bar>
-    <app-resize-bar 
-        [elementCurrentHeight]="getCurrentHeight"
-        [elementCurrentWidth]="getCurrentWidth"
-        [config]="{
-            y:{active:true, backward:false}, 
-            x:{active:true, backward:false},}"
-        (updateCurrentSize)="handleUpdateCurrentWidth($event)"
-        class="col col-3">
+    <app-resize-bar
+        class="col col-3"
+        [config]="configRow3Col3"
+        [ctx]="ctx()"
+        (onMouseDownOutput)="handleOnMouseDownOutput($event)"
+        (onMouseMoveOutput)="handleOnMouseMoveOutput($event)"
+        (onMouseUpOutput)="handleOnMouseUpOutput($event)">
     </app-resize-bar>
 </div>

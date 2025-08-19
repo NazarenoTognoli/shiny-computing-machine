@@ -2,8 +2,6 @@ import { Component, HostListener, input, AfterViewInit, signal, output  } from '
 import { ResizeService } from './resize.service';
 import { toPixels, toPercentage } from '../../shared/utils/units-conversion';
 import { CommonModule } from '@angular/common';
-//Interface
-import { Ctx } from '../window/window.component';
 
 interface Init {
   clientX: number,
@@ -27,21 +25,6 @@ export interface ResizeConfig {
       height: ()=>number,
     }
   };
-  elementSizePct: {
-    default: {
-      width: number,
-      height: number,
-    },
-  };
-  elementPositionPct: {
-    default: {
-      left: number,
-      top: number,
-      bottom: number,
-      right: number,
-    },
-  };
-  container: {offsetHeight?: number, offsetWidth?: number, innerWidth?:number, innerHeight?:number};
 }
 
 const defaultConfig:ResizeConfig = {
@@ -59,45 +42,16 @@ const defaultConfig:ResizeConfig = {
       height: ()=>0,
     }
   },
-  elementSizePct: {
-    default: {
-      width: 60,
-      height: 60,
-    }
-  },
-  elementPositionPct: {
-    default: {
-      left: 20,
-      top: 20,
-      bottom: 20,
-      right: 20,
-    },
-  },
-  container: window
-}
-
-const defaultCtx:Ctx = {
-  elementPositionPct: {
-    discrepancy: {
-      left: 0,
-      top: 0,
-      right: 0,
-      bottom: 0,
-    }
-  },
-  elementPositionPx: {
-    delta: {
-      left: 0,
-      top: 0,
-      right: 0,
-      bottom: 0,
-    } 
-  }
 }
 
 export interface OnMouseDownOutput {
   positionToRemove:PositionProperties;
   positionToApply:PositionProperties;
+}
+
+export interface OnMouseMoveOutput {
+  width: number | null;
+  height: number | null;
 }
 
 export interface OnMouseUpOutput {
@@ -120,18 +74,17 @@ export class ResizeBarComponent {
   constructor(private resize:ResizeService){}
 
   config = input<ResizeConfig>(defaultConfig);
-  ctx = input<Ctx>(defaultCtx);
 
   onMouseDownOutput = output<OnMouseDownOutput>();
   onMouseMoveOutput = output<any>();
-  onMouseUpOutput = output<any>();
+  onMouseUpOutput = output<OnMouseUpOutput>();
 
   notifyOnMouseDownOutput(value:OnMouseDownOutput){
     this.onMouseDownOutput.emit(value);
     //console.log("notifyOnMouseDownOutput " + JSON.stringify(value));
   }
 
-  notifyOnMouseMoveOutput(value:any){
+  notifyOnMouseMoveOutput(value:OnMouseMoveOutput){
     this.onMouseMoveOutput.emit(value);
     //console.log("notifyOnMouseMoveOutput " + JSON.stringify(value));
   }
@@ -203,18 +156,16 @@ export class ResizeBarComponent {
     const delta = {
       y: this.y() ? (event.clientY - this.init.clientY) : 0,
       x: this.x() ? (event.clientX - this.init.clientX) : 0, 
-    } 
+    }
     
-    const newValue = () => (
-      {
-        width: this.backward('x') ? this.init.offsetWidth - delta.x : this.init.offsetWidth + delta.x,
-        height: this.backward('y') ? this.init.offsetHeight - delta.y : this.init.offsetHeight + delta.y,
-      }
-    );
+    const refresh = {
+      width: this.backward('x') ? this.init.offsetWidth - delta.x : this.init.offsetWidth + delta.x,
+      height: this.backward('y') ? this.init.offsetHeight - delta.y : this.init.offsetHeight + delta.y,
+    };
     
     this.notifyOnMouseMoveOutput({
-      width: this.x() ? newValue().width : null,
-      height: this.y() ? newValue().height : null,
+      width: this.x() ? refresh.width : null,
+      height: this.y() ? refresh.height : null,
     });
   }
 

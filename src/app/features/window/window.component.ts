@@ -5,16 +5,22 @@ import { ResizeBarComponent } from '../resize-bar/resize-bar.component';
 //UTILS 
 import { toPixels, toPercentage } from '../../shared/utils/units-conversion';
 //Types
-import { OnMouseDownOutput, OnMouseUpOutput, ResizeConfig, PositionProperties } from '../resize-bar/resize-bar.component';
+import { OnMouseDownOutput, OnMouseMoveOutput, OnMouseUpOutput, ResizeConfig, PositionProperties } from '../resize-bar/resize-bar.component';
 
-export interface Ctx { //CTX SHOULD BE IN A HIGHER LEVEL OF CONTEXT BY AXIS
+export interface Ctx {
   elementPositionPct: {
     discrepancy: {
       left: number,
       top: number,
       right: number,
       bottom: number,
-    }
+    },
+    default: {
+      left: number,
+      top: number,
+      bottom: number,
+      right: number,
+    },
   };
   elementPositionPx: {
     delta: {
@@ -24,6 +30,13 @@ export interface Ctx { //CTX SHOULD BE IN A HIGHER LEVEL OF CONTEXT BY AXIS
       bottom: number,
     }
   };
+  elementSizePct: {
+    default: {
+      width: number,
+      height: number,
+    },
+  };
+  container: {offsetHeight?: number, offsetWidth?: number, innerWidth?:number, innerHeight?:number};
 }
 
 @Component({
@@ -36,8 +49,8 @@ export interface Ctx { //CTX SHOULD BE IN A HIGHER LEVEL OF CONTEXT BY AXIS
 export class WindowComponent {
 
   container = window;
-  containerWidth = this.container.innerWidth;
-  containerHeight = this.container.innerHeight;
+  containerWidth = () => this.container.innerWidth;
+  containerHeight = () => this.container.innerHeight;
 
   ctx = signal<Ctx>({
     elementPositionPct: {
@@ -46,7 +59,13 @@ export class WindowComponent {
         top: 0,
         right: 0,
         bottom: 0,
-      }
+      },
+      default: {
+        left: 20,
+        top: 20,
+        bottom: 20,
+        right: 20,
+      },
     },
     elementPositionPx: {
       delta: {
@@ -55,7 +74,14 @@ export class WindowComponent {
         right: 0,
         bottom: 0,
       } 
-    }
+    },
+    elementSizePct: {
+      default: {
+        width: 60,
+        height: 60,
+      }
+    },
+    container: this.container,
   });
 
   constructor(@Host() public hostElement: ElementRef){}
@@ -75,24 +101,8 @@ export class WindowComponent {
         height: () => this.hostElement.nativeElement.getBoundingClientRect().height,
       }
     },
-    elementSizePct: {
-      default: {
-        width: 60,
-        height: 60,
-      }
-    },
-    elementPositionPct: {
-      default: {
-        left: 20,
-        top: 20,
-        bottom: 20,
-        right: 20,
-      },
-    },
-    container: this.container,
   }
 
-  // Configuraciones específicas para cada <app-resize-bar>
   configRow1Col1: ResizeConfig = {
     ...this.resizeConfig,
     y: { active: true, backward: true },
@@ -142,26 +152,20 @@ export class WindowComponent {
   };
 
   handleOnMouseDownOutput({positionToRemove, positionToApply}:OnMouseDownOutput){
-    //console.log("handleOnMouseDownOutput " + JSON.stringify({positionToRemove:positionToRemove, positionToApply:positionToApply, discrepancyPct:discrepancyPct, defaultPositionPct:defaultPositionPct}));
     const discrepancyPct = this.ctx().elementPositionPct.discrepancy[positionToApply];
-    const defaultPositionPct = this.resizeConfig.elementPositionPct.default[positionToApply];
+    const defaultPositionPct = this.ctx().elementPositionPct.default[positionToApply];
     const el = this.hostElement.nativeElement;
-    
     el.style.removeProperty(positionToRemove);
     el.style[positionToApply] = `calc(${defaultPositionPct - discrepancyPct}%)`;
-
-    console.log("discrepancyPct." + positionToRemove + ": " + discrepancyPct);
-    console.log("default - discrepancy: " + (defaultPositionPct - discrepancyPct));
   }
 
-  handleOnMouseMoveOutput({width, height}:{width: number | null, height: number | null}){
-    //console.log("handleOnMouseMoveOutput-width:" + JSON.stringify(width) + "-height:" + JSON.stringify(height));
+  handleOnMouseMoveOutput({width, height}:OnMouseMoveOutput){
     const el = this.hostElement.nativeElement;
     if (width !== null){
-      el.style.width = `${toPercentage(width, this.containerWidth)}%`;
+      el.style.width = `${toPercentage(width, this.containerWidth())}%`;
     }
     if (height !== null){
-      el.style.height = `${toPercentage(height, this.containerHeight)}%`;
+      el.style.height = `${toPercentage(height, this.containerHeight())}%`;
     }
   }
 
@@ -169,35 +173,34 @@ export class WindowComponent {
     const ctx = this.ctx();
     const updatedCtx: Ctx = { ...ctx };
 
-    const rawContainer = this.resizeConfig.container;
+    const container = (a: 'width' | 'height' | PositionProperties) => {
+      const rawContainer = this.ctx().container;
+      const containerX = rawContainer.offsetWidth ? rawContainer.offsetWidth : window.innerWidth;
+      const containerY = rawContainer.offsetHeight ? rawContainer.offsetHeight : window.innerHeight;
+      return a === 'width' || a === 'left' || a === 'right' ? containerX : containerY;   
+    }
     
-    const containerX = rawContainer.offsetWidth ? rawContainer.offsetWidth : window.innerWidth;
-    const containerY = rawContainer.offsetHeight ? rawContainer.offsetHeight : window.innerHeight;
+    const elementSizePx = (a: 'width' | 'height') => this.resizeConfig.elementSizePx.current[a]();
+    const defaultElementSizePct = (a: 'width' | 'height') => updatedCtx.elementSizePct.default[a];
 
-    const container = (a: 'width' | 'height' | PositionProperties) =>
-    a === 'width' || a === 'left' || a === 'right' ? containerX : containerY;   
-    
-    const elSizePx = (a: 'width' | 'height') => this.resizeConfig.elementSizePx.current[a]();
-    const defaultElSizePct = (a: 'width' | 'height') => this.resizeConfig.elementSizePct.default[a]; 
     const discrepancyPx = (a: PositionProperties) => toPixels(updatedCtx.elementPositionPct.discrepancy[a], container(a));
-    const elPositionPct = (a: PositionProperties) => toPercentage(updatedCtx.elementPositionPx.delta[a], container(a));
+    const elementDeltaPct = (a: PositionProperties) => toPercentage(updatedCtx.elementPositionPx.delta[a], container(a));
      
-
-    if (x && !backward('x')){ //PROBLEM: DISCREPANCY HAS NO ACCESS TO UPDATED DELTA AND IS REQUIRED
-      updatedCtx.elementPositionPx.delta.right = elSizePx('width') - discrepancyPx('left'); //right
-      updatedCtx.elementPositionPct.discrepancy.right = elPositionPct('right') - defaultElSizePct('width'); //right
+    if (x && !backward('x')){
+      updatedCtx.elementPositionPx.delta.right = elementSizePx('width') - discrepancyPx('left'); //right
+      updatedCtx.elementPositionPct.discrepancy.right = elementDeltaPct('right') - defaultElementSizePct('width'); //right
     }
     else if (x && backward('x')){
-      updatedCtx.elementPositionPx.delta.left = elSizePx('width') - discrepancyPx('right'); //left
-      updatedCtx.elementPositionPct.discrepancy.left = elPositionPct('left') - defaultElSizePct('width'); //left
+      updatedCtx.elementPositionPx.delta.left = elementSizePx('width') - discrepancyPx('right'); //left
+      updatedCtx.elementPositionPct.discrepancy.left = elementDeltaPct('left') - defaultElementSizePct('width'); //left
     }
     if (y && !backward('y')){
-      updatedCtx.elementPositionPx.delta.bottom = elSizePx('height') - discrepancyPx('top'); //bottom
-      updatedCtx.elementPositionPct.discrepancy.bottom = elPositionPct('bottom') - defaultElSizePct('height'); //bottom
+      updatedCtx.elementPositionPx.delta.bottom = elementSizePx('height') - discrepancyPx('top'); //bottom
+      updatedCtx.elementPositionPct.discrepancy.bottom = elementDeltaPct('bottom') - defaultElementSizePct('height'); //bottom
     }
     else if (y && backward('y')){
-      updatedCtx.elementPositionPx.delta.top = elSizePx('height') - discrepancyPx('bottom'); //top
-      updatedCtx.elementPositionPct.discrepancy.top = elPositionPct('top') - defaultElSizePct('height'); //top
+      updatedCtx.elementPositionPx.delta.top = elementSizePx('height') - discrepancyPx('bottom'); //top
+      updatedCtx.elementPositionPct.discrepancy.top = elementDeltaPct('top') - defaultElementSizePct('height'); //top
     }
 
     this.ctx.set(updatedCtx);
@@ -205,15 +208,9 @@ export class WindowComponent {
 
   ngAfterViewInit(){
     const el = this.hostElement.nativeElement;
-    el.style.width = this.resizeConfig.elementSizePct.default.width + "%";
-    el.style.height = this.resizeConfig.elementSizePct.default.height + "%";
-    el.style.left = this.resizeConfig.elementPositionPct.default.left + "%";
-    el.style.top = this.resizeConfig.elementPositionPct.default.top + "%";
+    el.style.width = this.ctx().elementSizePct.default.width + "%";
+    el.style.height = this.ctx().elementSizePct.default.height + "%";
+    el.style.left = this.ctx().elementPositionPct.default.left + "%";
+    el.style.top = this.ctx().elementPositionPct.default.top + "%";
   }
 }
-/*
-   F. se encesita de para calcular relaciones, de forma natural debería ser el viewport, 
-   la vision natural es que por default haya un dashboard renderizandose de fondo.
-    
-  
-*/

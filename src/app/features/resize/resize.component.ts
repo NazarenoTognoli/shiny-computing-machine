@@ -63,13 +63,13 @@ export interface OnMouseUpOutput {
 export type PositionProperties =  "left" | "right" | "top" | "bottom";
 
 @Component({
-  selector: 'app-resize-bar',
+  selector: 'app-resize',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './resize-bar.component.html',
-  styleUrl: './resize-bar.component.scss'
+  templateUrl: './resize.component.html',
+  styleUrl: './resize.component.scss'
 })
-export class ResizeBarComponent {
+export class ResizeComponent {
 
   constructor(private resize:ResizeService){}
 

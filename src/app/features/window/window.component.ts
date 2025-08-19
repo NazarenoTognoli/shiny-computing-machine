@@ -1,11 +1,11 @@
 import { Component, HostListener, ElementRef, Host, AfterViewInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 //Components
-import { ResizeBarComponent } from '../resize-bar/resize-bar.component';
+import { ResizeComponent } from '../resize/resize.component';
 //UTILS 
 import { toPixels, toPercentage } from '../../shared/utils/units-conversion';
 //Types
-import { OnMouseDownOutput, OnMouseMoveOutput, OnMouseUpOutput, ResizeConfig, PositionProperties } from '../resize-bar/resize-bar.component';
+import { OnMouseDownOutput, OnMouseMoveOutput, OnMouseUpOutput, ResizeConfig, PositionProperties } from '../resize/resize.component';
 
 export interface Ctx {
   elementPositionPct: {
@@ -42,7 +42,7 @@ export interface Ctx {
 @Component({
   selector: 'app-window',
   standalone: true,
-  imports: [ResizeBarComponent, CommonModule],
+  imports: [ResizeComponent, CommonModule],
   templateUrl: './window.component.html',
   styleUrl: './window.component.scss'
 })

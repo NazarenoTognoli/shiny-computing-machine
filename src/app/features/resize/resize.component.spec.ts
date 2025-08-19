@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ResizeBarComponent } from './resize-bar.component';
+import { ResizeComponent } from './resize.component';
 
-describe('ResizeBarComponent', () => {
-  let component: ResizeBarComponent;
-  let fixture: ComponentFixture<ResizeBarComponent>;
+describe('ResizeComponent', () => {
+  let component: ResizeComponent;
+  let fixture: ComponentFixture<ResizeComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ResizeBarComponent]
+      imports: [ResizeComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ResizeBarComponent);
+    fixture = TestBed.createComponent(ResizeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

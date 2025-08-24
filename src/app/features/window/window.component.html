@@ -30,6 +30,10 @@
         (onMouseUpOutput)="handleOnMouseUpOutput($event)">
     </app-resize>
     <div class="col col-2">
+        <div class="header">
+            <span>Window</span>
+            <app-reposition class="reposition"></app-reposition>
+        </div>
         <div class="core">
             <ng-content></ng-content>
         </div>

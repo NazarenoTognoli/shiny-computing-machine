@@ -1,0 +1,51 @@
+.row {
+    display: flex;
+}
+.col {
+    outline: 1px solid #0F0;
+    z-index: 100;
+}
+.row-1, .row-3 {
+    height: 4px;
+    width: 100%;
+}
+.row-2 {
+    height: calc(100% - 8px);
+    width: 100%;
+}
+
+.row-1 > .col-1, .row-1 > .col-3, .row-3 > .col-1, .row-3 > .col-3 {
+    width: 4px;
+    height: 4px;
+}
+.row-1 > .col-2, .row-3 > .col-2 {
+    width: calc(100% - 8px);
+    height: 4px;
+}
+.row-2 > .col-1 {
+    height: 100%;
+    width: 4px;
+}
+.row-2 > .col-2 {
+    height: 100%;
+    width: calc(100% - 8px);
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+}
+.row-2 > .col-3 {
+    height: 100%;
+    width: 4px;
+}
+.row-1 > .col-1, .row-3 > .col-3 {
+    cursor: nw-resize;
+}
+.row-1 > .col-3, .row-3 > .col-1 {
+    cursor: sw-resize;
+}
+.row-1 > .col-2, .row-3 > .col-2 {
+    cursor: ns-resize;
+} 
+.row-2 > .col-1, .row-2 > .col-3 {
+    cursor: ew-resize;
+}

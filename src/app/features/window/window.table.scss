@@ -2,7 +2,7 @@
     display: flex;
 }
 .col {
-    outline: 1px solid #0F0;
+    //outline: 1px solid #0F0;
     z-index: 100;
 }
 .row-1, .row-3 {
@@ -32,6 +32,7 @@
     display: flex;
     flex-wrap: nowrap;
     flex-direction: column;
+    background: #333;
 }
 .row-2 > .col-3 {
     height: 100%;

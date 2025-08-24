@@ -2,11 +2,10 @@
 
 :host {
     color: #fff;
-    outline: 1px solid red;
+    //outline: 1px solid red;
     display: flex;
     flex-direction: column;
     position: absolute;
-    background: #333;
 }
 .core {
     height: calc(100% - 20px);
@@ -15,7 +14,6 @@
 .header {
     height: 20px;
     width: 100%;
-    background: #000;
     display: flex;
     align-items: center;
     user-select: none;
@@ -28,11 +26,11 @@ app-reposition {
     height: 100%;
     left: 0;
     top: 0;
-    background: green;
 }
 .header > span {
     font-family: monospace;
     font-size: 12px;
     padding-left: 10px;
     z-index: 10;
+    color: #777;
 }

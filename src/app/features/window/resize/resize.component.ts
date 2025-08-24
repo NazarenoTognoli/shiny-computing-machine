@@ -76,7 +76,7 @@ export class ResizeComponent {
   config = input<ResizeConfig>(defaultConfig);
 
   onMouseDownOutput = output<OnMouseDownOutput>();
-  onMouseMoveOutput = output<any>();
+  onMouseMoveOutput = output<OnMouseMoveOutput>();
   onMouseUpOutput = output<OnMouseUpOutput>();
 
   notifyOnMouseDownOutput(value:OnMouseDownOutput){

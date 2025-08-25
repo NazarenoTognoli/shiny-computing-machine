@@ -1,4 +1,4 @@
-import { Component, HostListener, ElementRef, Host, AfterViewInit, signal } from '@angular/core';
+import { Component, HostListener, ElementRef, Host, AfterViewInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 //Components
 import { ResizeComponent } from './resize/resize.component';
@@ -7,29 +7,15 @@ import { RepositionComponent } from './reposition/reposition.component';
 import { toPixels, toPercentage } from '../../shared/utils/units-conversion';
 //Types
 import { OnMouseDownOutput, OnMouseMoveOutput, OnMouseUpOutput, ResizeConfig, PositionProperties } from './resize/resize.component';
+import { RepositionProperties } from './reposition/reposition.component';
 
 export interface Ctx {
   elementPositionPct: {
-    discrepancy: {
-      left: number,
-      top: number,
-      right: number,
-      bottom: number,
-    },
-    default: {
-      left: number,
-      top: number,
-      bottom: number,
-      right: number,
-    },
+    discrepancy: RepositionProperties,
+    default: RepositionProperties,
   };
   elementPositionPx: {
-    delta: {
-      left: number,
-      top: number,
-      right: number,
-      bottom: number,
-    }
+    delta: RepositionProperties,
   };
   elementSizePct: {
     default: {
@@ -86,7 +72,7 @@ export class WindowComponent {
   });
 
   constructor(@Host() public hostElement: ElementRef){}
-  
+
   resizeConfig:ResizeConfig = {
     y: {
       active: false,
@@ -152,7 +138,37 @@ export class WindowComponent {
     x: { active: true, backward: false },
   };
 
-  handleOnMouseDownOutput({positionToRemove, positionToApply}:OnMouseDownOutput){
+  repositionInput = computed(()=>({
+    left: toPixels(this.ctx().elementPositionPct.default.left, this.containerWidth()),
+    top: toPixels(this.ctx().elementPositionPct.default.top, this.containerHeight()),
+    right: toPixels(this.ctx().elementPositionPct.default.right, this.containerWidth()),
+    bottom: toPixels(this.ctx().elementPositionPct.default.bottom, this.containerHeight()),
+  }));
+
+  handleRepositionOutput({left, top, right, bottom}:RepositionProperties){
+    const updatedCtx = {...this.ctx()};
+    
+    updatedCtx.elementPositionPct.default = {
+      left: toPercentage(left, this.containerWidth()),
+      top: toPercentage(top, this.containerHeight()),
+      right: toPercentage(right, this.containerWidth()),
+      bottom: toPercentage(bottom, this.containerHeight()),
+    }
+
+    this.ctx.set(updatedCtx);
+
+    const discrepancyPct = (a:PositionProperties) => this.ctx().elementPositionPct.discrepancy[a];
+    const defaultPositionPct = (a:PositionProperties) => this.ctx().elementPositionPct.default[a];
+    
+    const el = this.hostElement.nativeElement;
+    
+    el.style.removeProperty('right');
+    el.style.removeProperty('bottom');
+    el.style.left = `calc(${defaultPositionPct('left') - discrepancyPct('left')}%)`;
+    el.style.top = `calc(${defaultPositionPct('top') - discrepancyPct('top')}%)`;
+  }
+
+  handleResizeOnMouseDownOutput({positionToRemove, positionToApply}:OnMouseDownOutput){
     const discrepancyPct = this.ctx().elementPositionPct.discrepancy[positionToApply];
     const defaultPositionPct = this.ctx().elementPositionPct.default[positionToApply];
     const el = this.hostElement.nativeElement;
@@ -160,7 +176,7 @@ export class WindowComponent {
     el.style[positionToApply] = `calc(${defaultPositionPct - discrepancyPct}%)`;
   }
 
-  handleOnMouseMoveOutput({width, height}:OnMouseMoveOutput){
+  handleResizeOnMouseMoveOutput({width, height}:OnMouseMoveOutput){
     const el = this.hostElement.nativeElement;
     if (width !== null){
       el.style.width = `${toPercentage(width, this.containerWidth())}%`;
@@ -170,7 +186,7 @@ export class WindowComponent {
     }
   }
 
-  handleOnMouseUpOutput({ x, y, backward }: OnMouseUpOutput) {
+  handleResizeOnMouseUpOutput({ x, y, backward }: OnMouseUpOutput) {
     const ctx = this.ctx();
     const updatedCtx: Ctx = { ...ctx };
 

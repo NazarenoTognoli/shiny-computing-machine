@@ -36,8 +36,8 @@ export interface Ctx {
 export class WindowComponent {
 
   container = window;
-  containerWidth = () => this.container.innerWidth;
-  containerHeight = () => this.container.innerHeight;
+  containerWidth = signal<number>(this.container.innerWidth);
+  containerHeight = signal<number>(this.container.innerHeight);
 
   ctx = signal<Ctx>({
     elementPositionPct: {
@@ -223,11 +223,17 @@ export class WindowComponent {
     this.ctx.set(updatedCtx);
   }
 
+  @HostListener('window:resize', ['$event'])
+  onResize(event: UIEvent) {
+    this.containerWidth.set(this.container.innerWidth);
+    this.containerHeight.set(this.container.innerHeight);
+  }
+  
   ngAfterViewInit(){
     const el = this.hostElement.nativeElement;
     el.style.width = this.ctx().elementSizePct.default.width + "%";
     el.style.height = this.ctx().elementSizePct.default.height + "%";
     el.style.left = this.ctx().elementPositionPct.default.left + "%";
-    el.style.top = this.ctx().elementPositionPct.default.top + "%";
+    el.style.top = this.ctx().elementPositionPct.default.top + "%";  
   }
 }

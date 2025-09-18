@@ -1,6 +1,6 @@
 import { Component, HostListener, input, AfterViewInit, signal, output  } from '@angular/core';
 import { ResizeService } from './resize.service';
-import { toPixels, toPercentage } from '../../../shared/utils/units-conversion';
+import { toPixels, toPercentage } from '@shared/utils/units-conversion';
 import { CommonModule } from '@angular/common';
 
 interface Init {

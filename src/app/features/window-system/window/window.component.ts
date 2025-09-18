@@ -1,13 +1,15 @@
-import { Component, HostListener, ElementRef, Host, AfterViewInit, signal, computed } from '@angular/core';
+import { Component, HostBinding, HostListener, ElementRef, Host, AfterViewInit, signal, computed, input, effect, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 //Components
 import { ResizeComponent } from './resize/resize.component';
 import { RepositionComponent } from './reposition/reposition.component';
 //UTILS 
-import { toPixels, toPercentage } from '../../shared/utils/units-conversion';
+import { toPixels, toPercentage } from '@shared/utils/units-conversion';
 //Types
 import { OnMouseDownOutput, OnMouseMoveOutput, OnMouseUpOutput, ResizeConfig, PositionProperties } from './resize/resize.component';
 import { RepositionProperties } from './reposition/reposition.component';
+//services
+import { WindowService } from './window.service';
 
 export interface Ctx {
   elementPositionPct: {
@@ -39,6 +41,35 @@ export class WindowComponent {
   containerWidth = signal<number>(this.container.innerWidth);
   containerHeight = signal<number>(this.container.innerHeight);
 
+  windowName = input<string>('window');
+  //0 left 1 top 2 width 3 height
+  windowDefault = input<[number, number, number, number]>([25, 25, 50, 50]);
+  //0 position 1 size
+  windowDefaultComputedPosition = computed(()=>{
+    if (this.windowDefault()[0] + this.windowDefault()[2] > 100){
+      console.error('The sum of left and width cannot be more than 100%.');
+    }
+    if (this.windowDefault()[1] + this.windowDefault()[3] > 100){
+      console.error('The sum of top and height cannot be more than 100%.');
+    }
+    return { 
+        left: this.windowDefault()[0],
+        top: this.windowDefault()[1], 
+        right: 100 - this.windowDefault()[2] - this.windowDefault()[0],
+        bottom: 100 - this.windowDefault()[3] - this.windowDefault()[1],
+      }
+  });
+
+  @HostBinding('style.z-index')
+  get hostStyles() {
+    return this.zindex() * 1000
+  }
+
+  @HostListener('mousedown', ['$event'])
+  onMouseDown(event:MouseEvent){
+    this.windowService.bringToFront(this.windowName());
+    this.windowService.flag.set(this.windowService.flag() + 1);
+  }
   ctx = signal<Ctx>({
     elementPositionPct: {
       discrepancy: {
@@ -47,12 +78,7 @@ export class WindowComponent {
         right: 0,
         bottom: 0,
       },
-      default: {
-        left: 20,
-        top: 20,
-        bottom: 20,
-        right: 20,
-      },
+      default: this.windowDefaultComputedPosition(),
     },
     elementPositionPx: {
       delta: {
@@ -64,14 +90,31 @@ export class WindowComponent {
     },
     elementSizePct: {
       default: {
-        width: 60,
-        height: 60,
+        width: this.windowDefault()[2],
+        height: this.windowDefault()[3],
       }
     },
     container: this.container,
   });
 
-  constructor(@Host() public hostElement: ElementRef){}
+  hostFocus = signal<boolean>(false);
+
+  constructor(@Host() public hostElement: ElementRef, public windowService:WindowService){
+    effect(()=>{
+      this.windowName() !== 'window' ? this.windowService.addId(this.windowName()) : null;
+    });
+    effect(()=>{
+      const flag = this.windowService.flag();
+      this.zindex.set(this.windowService.getZIndex(this.windowName()));
+      if (this.windowService.getZIndex(this.windowName()) === this.windowService.ids().length){
+        this.hostFocus.set(true);
+      } else {
+        this.hostFocus.set(false);
+      }
+    });
+  }
+
+  zindex = signal<number>(1);
 
   resizeConfig:ResizeConfig = {
     y: {
@@ -228,12 +271,22 @@ export class WindowComponent {
     this.containerWidth.set(this.container.innerWidth);
     this.containerHeight.set(this.container.innerHeight);
   }
+
+  ngOnInit(){
+    //for initialization of ctx signal with input values
+    const ctxCopy = {...this.ctx()};
+    ctxCopy.elementSizePct.default.width = this.windowDefault()[2];
+    ctxCopy.elementSizePct.default.height = this.windowDefault()[3];
+    ctxCopy.elementPositionPct.default = this.windowDefaultComputedPosition();
+    this.ctx.set(ctxCopy);
+  }
   
   ngAfterViewInit(){
     const el = this.hostElement.nativeElement;
     el.style.width = this.ctx().elementSizePct.default.width + "%";
     el.style.height = this.ctx().elementSizePct.default.height + "%";
     el.style.left = this.ctx().elementPositionPct.default.left + "%";
-    el.style.top = this.ctx().elementPositionPct.default.top + "%";  
+    el.style.top = this.ctx().elementPositionPct.default.top + "%";
+    this.windowService.flag.set(this.windowService.flag() + 1);
   }
 }

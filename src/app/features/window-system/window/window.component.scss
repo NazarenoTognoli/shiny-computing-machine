@@ -26,11 +26,11 @@ app-reposition {
     height: 100%;
     left: 0;
     top: 0;
+    z-index: 10;
 }
 .header > span {
     font-family: monospace;
     font-size: 12px;
     padding-left: 10px;
-    z-index: 10;
     color: #777;
 }

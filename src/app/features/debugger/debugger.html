@@ -1,0 +1,18 @@
+<app-window [windowName]="'debugger'">
+    <div class="debugger">
+        <div class="debugger-content">
+            <app-debugger-line class="debugger-line">
+                line of example
+            </app-debugger-line>
+            <app-debugger-line class="debugger-line" [color]="'red'">
+                line of example
+            </app-debugger-line>
+            <app-debugger-line class="debugger-line">
+                line of example
+            </app-debugger-line>
+            <app-debugger-line class="debugger-line">
+                {{ doesSomething() }}
+            </app-debugger-line>
+        </div>
+    </div>
+</app-window>

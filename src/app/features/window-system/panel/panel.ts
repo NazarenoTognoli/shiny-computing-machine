@@ -28,6 +28,7 @@ export class Panel {
       } else {
         this.isPanelExpandedChange.emit(false);
       }
+      windowService.panelFlag.set(this.isPanelExpanded());
     });
   }
 }

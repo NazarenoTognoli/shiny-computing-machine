@@ -3,9 +3,10 @@ import { Injectable, signal } from '@angular/core';
   providedIn: 'root'
 })
 export class WindowService {
-  flag = signal<number>(0);
+  ZIndexflag = signal<number>(0);
+  panelFlag = signal<boolean>(false);
   ids = signal<string[]>([]);
-
+  container = signal<{width: number, height: number}>({width: window.innerWidth, height: window.innerHeight});
   constructor() {}
 
   // Add a new id to the top (highest z-index)

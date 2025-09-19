@@ -1,6 +1,6 @@
 <div class="app">
   <app-panel class="panel" (isPanelExpandedChange)="handleIsPanelExpandedChange($event)"></app-panel>
-  <div class="dashboard" [ngClass]="{ 'dashboard-with-panel-expanded': isPanelExpanded() }">
+  <div #dashboard class="dashboard" [ngClass]="{ 'dashboard-with-panel-expanded': isPanelExpanded() }">
     <app-debugger></app-debugger>
     <app-nav></app-nav>
     <app-card></app-card>

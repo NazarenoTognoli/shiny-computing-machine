@@ -1,4 +1,4 @@
-import { Component, HostBinding, HostListener, ElementRef, Host, AfterViewInit, signal, computed, input, effect, OnInit } from '@angular/core';
+import { Component, HostBinding, HostListener, ElementRef, WritableSignal, Host, AfterViewInit, signal, computed, input, effect, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 //Components
 import { ResizeComponent } from './resize/resize.component';
@@ -25,7 +25,7 @@ export interface Ctx {
       height: number,
     },
   };
-  container: {offsetHeight?: number, offsetWidth?: number, innerWidth?:number, innerHeight?:number};
+  //container: {width?: number, height?: number};
 }
 
 @Component({
@@ -36,11 +36,28 @@ export interface Ctx {
   styleUrl: './window.component.scss'
 })
 export class WindowComponent {
-  container = window;
-  containerWidth = signal<number>(this.container.innerWidth);
-  containerHeight = signal<number>(this.container.innerHeight);
   closeFlag = signal<boolean>(false);
-
+  constructor(@Host() public hostElement: ElementRef, public windowService:WindowService){
+    effect(()=>{
+      this.windowName() !== 'window' ? this.windowService.addId(this.windowName()) : null;
+    });
+    effect(()=>{
+      (()=>this.windowService.ZIndexflag())(); //to trigger the effect when flag changes
+      this.zindex.set(this.windowService.getZIndex(this.windowName()));
+      if (this.windowService.getZIndex(this.windowName()) === this.windowService.ids().length){
+        this.hostFocus.set(true);
+      } else {
+        this.hostFocus.set(false);
+      }
+    });
+    // effect(()=>{
+    //   (()=>this.windowService.panelFlag())(); //to trigger the effect when flag changes
+    //   this.containerWidth.set(this.container.width);
+    //   this.containerHeight.set(this.container.height);
+    // });
+  }
+  containerWidth = computed(() => this.windowService.container().width);
+  containerHeight = computed(() => this.windowService.container().height);
   windowName = input<string>('window');
   //0 left 1 top 2 width 3 height
   windowDefault = input<[number, number, number, number]>([25, 25, 50, 50]);
@@ -70,12 +87,12 @@ export class WindowComponent {
   @HostListener('mousedown', ['$event'])
   onMouseDown(event:MouseEvent){
     this.windowService.bringToFront(this.windowName());
-    this.windowService.flag.set(this.windowService.flag() + 1);
+    this.windowService.ZIndexflag.set(this.windowService.ZIndexflag() + 1);
   }
 
   handleCloseOnClickOutput(event:MouseEvent){
     this.windowService.removeId(this.windowName());
-    this.windowService.flag.set(this.windowService.flag() + 1);
+    this.windowService.ZIndexflag.set(this.windowService.ZIndexflag() + 1);
     this.closeFlag.set(true);
   }
 
@@ -102,27 +119,10 @@ export class WindowComponent {
         width: this.windowDefault()[2],
         height: this.windowDefault()[3],
       }
-    },
-    container: this.container,
+    }
   });
 
   hostFocus = signal<boolean>(false);
-
-  constructor(@Host() public hostElement: ElementRef, public windowService:WindowService){
-    effect(()=>{
-      this.windowName() !== 'window' ? this.windowService.addId(this.windowName()) : null;
-    });
-    effect(()=>{
-      (()=>this.windowService.flag())(); //to trigger the effect when flag changes
-      this.zindex.set(this.windowService.getZIndex(this.windowName()));
-      if (this.windowService.getZIndex(this.windowName()) === this.windowService.ids().length){
-        this.hostFocus.set(true);
-      } else {
-        this.hostFocus.set(false);
-      }
-    });
-  }
-
   zindex = signal<number>(1);
 
   resizeConfig:ResizeConfig = {
@@ -243,9 +243,9 @@ export class WindowComponent {
     const updatedCtx: Ctx = { ...ctx };
 
     const container = (a: 'width' | 'height' | PositionProperties) => {
-      const rawContainer = this.ctx().container;
-      const containerX = rawContainer.offsetWidth ? rawContainer.offsetWidth : window.innerWidth;
-      const containerY = rawContainer.offsetHeight ? rawContainer.offsetHeight : window.innerHeight;
+      //const rawContainer = this.ctx().container;
+      const containerX = this.containerWidth();
+      const containerY = this.containerHeight();
       return a === 'width' || a === 'left' || a === 'right' ? containerX : containerY;   
     }
     
@@ -275,11 +275,11 @@ export class WindowComponent {
     this.ctx.set(updatedCtx);
   }
 
-  @HostListener('window:resize', ['$event'])
-  onResize(event: UIEvent) {
-    this.containerWidth.set(this.container.innerWidth);
-    this.containerHeight.set(this.container.innerHeight);
-  }
+  // @HostListener('window:resize', ['$event'])
+  // onResize(event: UIEvent) {
+  //   this.containerWidth.set(this.containerWidth());
+  //   this.containerHeight.set(this.container.height);
+  // }
 
   ngOnInit(){
     //for initialization of ctx signal with input values
@@ -296,6 +296,6 @@ export class WindowComponent {
     el.style.height = this.ctx().elementSizePct.default.height + "%";
     el.style.left = this.ctx().elementPositionPct.default.left + "%";
     el.style.top = this.ctx().elementPositionPct.default.top + "%";
-    this.windowService.flag.set(this.windowService.flag() + 1);
+    this.windowService.ZIndexflag.set(this.windowService.ZIndexflag() + 1);
   }
 }

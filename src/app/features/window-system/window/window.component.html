@@ -37,6 +37,11 @@
                 [elementPositionPxDefaultInput]="repositionInput()"
                 (elementPositionPxDefaultOutput)="handleRepositionOutput($event)">
             </app-reposition>
+            <div
+                (click)="handleCloseOnClickOutput($event)"
+                class="close">
+                <span>X</span>
+            </div>
         </div>
         <div class="core">
             <ng-content></ng-content>

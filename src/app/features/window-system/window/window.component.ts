@@ -36,15 +36,14 @@ export interface Ctx {
   styleUrl: './window.component.scss'
 })
 export class WindowComponent {
-
   container = window;
   containerWidth = signal<number>(this.container.innerWidth);
   containerHeight = signal<number>(this.container.innerHeight);
+  closeFlag = signal<boolean>(false);
 
   windowName = input<string>('window');
   //0 left 1 top 2 width 3 height
   windowDefault = input<[number, number, number, number]>([25, 25, 50, 50]);
-  //0 position 1 size
   windowDefaultComputedPosition = computed(()=>{
     if (this.windowDefault()[0] + this.windowDefault()[2] > 100){
       console.error('The sum of left and width cannot be more than 100%.');
@@ -60,9 +59,12 @@ export class WindowComponent {
       }
   });
 
-  @HostBinding('style.z-index')
+  @HostBinding('style')
   get hostStyles() {
-    return this.zindex() * 1000
+    return {
+      'z-index':this.zindex() * 10,
+      'display': this.closeFlag() ? 'none' : 'flex',
+    }
   }
 
   @HostListener('mousedown', ['$event'])
@@ -70,6 +72,13 @@ export class WindowComponent {
     this.windowService.bringToFront(this.windowName());
     this.windowService.flag.set(this.windowService.flag() + 1);
   }
+
+  handleCloseOnClickOutput(event:MouseEvent){
+    this.windowService.removeId(this.windowName());
+    this.windowService.flag.set(this.windowService.flag() + 1);
+    this.closeFlag.set(true);
+  }
+
   ctx = signal<Ctx>({
     elementPositionPct: {
       discrepancy: {
@@ -104,7 +113,7 @@ export class WindowComponent {
       this.windowName() !== 'window' ? this.windowService.addId(this.windowName()) : null;
     });
     effect(()=>{
-      const flag = this.windowService.flag();
+      (()=>this.windowService.flag())(); //to trigger the effect when flag changes
       this.zindex.set(this.windowService.getZIndex(this.windowName()));
       if (this.windowService.getZIndex(this.windowName()) === this.windowService.ids().length){
         this.hostFocus.set(true);

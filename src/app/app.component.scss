@@ -4,8 +4,16 @@
     height: 100vh;
     position: relative;
 }
+.dashboard-with-panel-expanded {
+    width: calc(100vw - 50px);
+}
 .window-test__span {
     padding-left: 10px;
+}
+.app {
+    position: relative;
+    display: flex;
+    flex-direction: row;
 }
 //formula para centrar un div: (tamaño del viewport - tamaño del div) / 2.
 //formula para position contraria: tamaño del viewport - tamaño del div - position forward.

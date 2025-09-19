@@ -1,0 +1,43 @@
+:host {
+    left: 0;
+    top: 0;
+    position: relative;
+    width: 50px;
+    height: 100vh;
+    background-color: #222;
+    border-right: 1px solid #999;
+    z-index: 999999;
+    display: flex;
+    flex-direction: column;
+}
+
+.expand-button {
+    width: 100%;
+    height: 50px;
+    color: white;
+    background-color: transparent;
+    border: none;
+    font-size: 30px;
+    cursor: pointer;
+}
+.rail {
+    height: calc(100% - 50px);
+    width: 100%;
+    background-color: purple;
+    display: inherit;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    overflow: hidden;
+}
+.rail > .example-item {
+    width: 40px;
+    height: 40px;
+    outline: 1px solid #999;
+    background-color: #222;
+    margin-top: 5px;
+    cursor: pointer;
+    color: #fff;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 11px;
+}

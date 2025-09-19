@@ -17,6 +17,19 @@ export class WindowService {
     }
   }
 
+  // Remove an existing id from the list
+  removeId(id: string): void {
+    const currentIds = this.ids();
+    const idx = currentIds.indexOf(id);
+
+    if (idx !== -1) {
+      const newIds = [...currentIds]; // copia defensiva
+      newIds.splice(idx, 1);          // elimina el id
+      this.ids.set(newIds);           // actualiza el signal
+      console.log('removed id:', id, this.ids());
+    }
+  }
+
   // Bring an existing id to the top (highest z-index)
   bringToFront(id: string) {
     const idx = this.ids().indexOf(id);

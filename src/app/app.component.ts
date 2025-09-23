@@ -19,7 +19,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   isPanelExpanded = signal(false);
   handleIsPanelExpandedChange(isExpanded: boolean) {
     this.isPanelExpanded.set(isExpanded);
-    Promise.resolve().then(() => {
+    Promise.resolve().then(() => { //a reliable way to measure the DOM after Angular updates state
       this.updateContainer();
     });
   }

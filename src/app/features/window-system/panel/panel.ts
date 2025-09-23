@@ -21,7 +21,7 @@ export class Panel {
       'border-color': this.isPanelExpanded() ? '#999' : 'transparent',
     }
   }
-  constructor(windowService: WindowService) {
+  constructor(public windowService: WindowService) {
     effect(() => {
       if (this.isPanelExpanded()) {
         this.isPanelExpandedChange.emit(true);

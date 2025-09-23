@@ -2,18 +2,11 @@
     =
 </button>
 <div class="rail">
-    <div class="example-item">
-        <span>debug</span>
-    </div>
-    <div class="example-item">
-        <span>nav</span>
-    </div>
-    <div class="example-item">
-        <span>card</span>
-    </div>
-    <div class="example-item">
-        <span>dom</span>
-    </div>
+    @for (w of windowService.windows(); track w.name) {
+        <div class="window-btn">
+            <span>{{ w.name }}</span>
+        </div>
+    }
 </div>
 <!-- *ngFor="let item of itemsSync.items()" [data]="item" -->
  <!-- si le meto el ngfor de una al indice del array de ids se van a generar los botones al orden del indice. 

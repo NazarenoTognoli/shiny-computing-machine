@@ -1,4 +1,4 @@
-import { Component, HostBinding, HostListener, ElementRef, WritableSignal, Host, AfterViewInit, signal, computed, input, effect, OnInit } from '@angular/core';
+import { Component, HostBinding, HostListener, ElementRef, Host, AfterViewInit, signal, computed, input, effect, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 //Components
 import { ResizeComponent } from './resize/resize.component';
@@ -36,15 +36,15 @@ export interface Ctx {
   styleUrl: './window.component.scss'
 })
 export class WindowComponent {
-  closeFlag = signal<boolean>(false);
   constructor(@Host() public hostElement: ElementRef, public windowService:WindowService){
     effect(()=>{
-      this.windowName() !== 'window' ? this.windowService.addId(this.windowName()) : null;
+      this.windowName() !== 'window' ? this.windowService.addWindow(this.windowName()) : null;
     });
     effect(()=>{
       (()=>this.windowService.ZIndexflag())(); //to trigger the effect when flag changes
       this.zindex.set(this.windowService.getZIndex(this.windowName()));
-      if (this.windowService.getZIndex(this.windowName()) === this.windowService.ids().length){
+      //here i need to calculate maxzindex
+      if (this.windowService.getZIndex(this.windowName()) === this.windowService.maxZindex()){
         this.hostFocus.set(true);
       } else {
         this.hostFocus.set(false);
@@ -79,8 +79,8 @@ export class WindowComponent {
   @HostBinding('style')
   get hostStyles() {
     return {
-      'z-index':this.zindex() * 10,
-      'display': this.closeFlag() ? 'none' : 'flex',
+      'z-index':this.zindex(),
+      // 'display': !this.windowService.findWindow(this.windowName()).active ? 'none' : 'flex',
     }
   }
 
@@ -91,9 +91,12 @@ export class WindowComponent {
   }
 
   handleCloseOnClickOutput(event:MouseEvent){
-    this.windowService.removeId(this.windowName());
+    this.windowService.removeWindow(this.windowName());
     this.windowService.ZIndexflag.set(this.windowService.ZIndexflag() + 1);
-    this.closeFlag.set(true);
+    const windowsCopy = [...this.windowService.windows()];
+    const wx = windowsCopy.findIndex(w => w.name === this.windowName());
+    windowsCopy[wx].active = false;
+    this.windowService.windows.set(windowsCopy);
   }
 
   ctx = signal<Ctx>({

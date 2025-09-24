@@ -4,13 +4,14 @@ import { CommonModule } from '@angular/common';
 import { Debugger } from './features/debugger/debugger';
 import { Nav } from './features/nav/nav';
 import { Card } from './features/card/card';
-import { Panel } from '@features/window-system/panel/panel';
+import { ConsoleBtn } from './features/console/console-btn/console-btn';
+import { Console } from './features/console/console';
 //services
 import { WindowService } from './features/window-system/window/window.service';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule , Debugger, Nav, Card, Panel],
+  imports: [RouterOutlet, Console, CommonModule, ConsoleBtn, Debugger, Nav, Card],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
@@ -22,6 +23,14 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     Promise.resolve().then(() => { //a reliable way to measure the DOM after Angular updates state
       this.updateContainer();
     });
+  }
+  handleConsoleBtn(){
+    const arr = [...this.windowService.windows()];
+    const wx = arr.findIndex(w => w.name === 'console');
+    arr[wx].active = true;
+    this.windowService.windows.set(arr);
+    this.windowService.bringToFront('console');
+    this.windowService.ZIndexflag.set(this.windowService.ZIndexflag() + 1);
   }
   constructor(private windowService: WindowService) {}
   @ViewChild('dashboard', { static: true }) elementRef!: ElementRef;

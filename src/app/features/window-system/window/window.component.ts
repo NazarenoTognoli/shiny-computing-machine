@@ -80,7 +80,7 @@ export class WindowComponent {
   get hostStyles() {
     return {
       'z-index':this.zindex(),
-      // 'display': !this.windowService.findWindow(this.windowName()).active ? 'none' : 'flex',
+      'display': !this.windowService.findWindow(this.windowName()).active ? 'none' : 'flex',
     }
   }
 

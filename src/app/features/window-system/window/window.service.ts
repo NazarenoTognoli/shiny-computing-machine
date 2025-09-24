@@ -17,7 +17,7 @@ export class WindowService {
   // Add a new id to the top (highest z-index)
   addWindow(id: string) {
     if (!this.windows().some(w => w.name === id)) {
-      const newWindows = [...this.windows(), {name: id, active:true, zIndex:this.maxZindex() + 10}]; // create a new array
+      const newWindows = [...this.windows(), {name: id, active:false, zIndex:this.maxZindex() + 10}]; // create a new array
       this.windows.set(newWindows);
     }
   }

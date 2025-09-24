@@ -1,0 +1,17 @@
+header {
+    height: 30px;
+    width: 100%;
+    background-color: #000;
+    display: none;
+}
+textarea {
+    all: unset;         // Quita todos los estilos por defecto posibles
+    appearance: none;
+    width: 100%;
+    background-color: #000;
+    //border-top: 1px solid #999;
+    //height: calc(100% - 29px);
+    height: 100%;
+    padding: 5px;
+    font-size: 13px;
+}

@@ -37,6 +37,7 @@ export interface Ctx {
 })
 export class WindowComponent {
   constructor(@Host() public hostElement: ElementRef, public windowService:WindowService){
+    effect(()=>console.log(this.windowStyle()));
     effect(()=>{
       this.windowName() !== 'window' ? this.windowService.addWindow(this.windowName()) : null;
     });
@@ -60,6 +61,9 @@ export class WindowComponent {
   containerHeight = computed(() => this.windowService.container().height);
   windowName = input<string>('window');
   //0 left 1 top 2 width 3 height
+  windowStyle = input<Record<string, string>>({});
+  headerStyle = input<Record<string, string>>({});
+  coreStyle = input<Record<string, string>>({});
   windowDefault = input<[number, number, number, number]>([25, 25, 50, 50]);
   windowDefaultComputedPosition = computed(()=>{
     if (this.windowDefault()[0] + this.windowDefault()[2] > 100){

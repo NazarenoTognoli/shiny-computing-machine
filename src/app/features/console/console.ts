@@ -12,11 +12,9 @@ import { inject } from '@angular/core';
   styleUrl: './console.scss'
 })
 export class Console {
+  counter:number = 0;
   windowService = inject(WindowService);
-  onInput(event: Event) {
-    const value = (event.target as HTMLTextAreaElement).value;
-    //console.log(value);
-  }
+  headerStyle = {'background-color': 'darkblue', 'color': '#fff'};
   onEnter(event: Event) {
     event.preventDefault();
     const textarea = event.target as HTMLTextAreaElement;

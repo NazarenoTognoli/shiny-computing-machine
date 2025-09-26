@@ -29,8 +29,8 @@
         (onMouseMoveOutput)="handleResizeOnMouseMoveOutput($event)"
         (onMouseUpOutput)="handleResizeOnMouseUpOutput($event)">
     </app-resize>
-    <div class="col col-2" [ngClass]="{'row2col2-focused': hostFocus()}">
-        <div class="header">
+    <div class="col col-2 row2col2" [ngClass]="{'row2col2-focused': hostFocus()}" [ngStyle]="windowStyle()">
+        <div class="header" [ngStyle]="headerStyle()">
             <span>{{windowName()}}</span>
             <app-reposition 
                 class="reposition" 
@@ -43,7 +43,7 @@
                 <span>X</span>
             </div>
         </div>
-        <div class="core">
+        <div class="core" [ngStyle]="coreStyle()">
             <ng-content></ng-content>
         </div>
     </div>

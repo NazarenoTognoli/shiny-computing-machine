@@ -14,11 +14,6 @@
     width: 100%;
 }
 
-.row2col2-focused {
-    outline: 1px solid #999;
-    box-shadow: 0 0px 20px 2px #000;
-}
-
 .row-1 > .col-1, .row-1 > .col-3, .row-3 > .col-1, .row-3 > .col-3 {
     width: 4px;
     height: 4px;
@@ -40,6 +35,13 @@
     background: #333;
     border-radius: 10px;
     overflow: hidden;
+}
+.row2col2 {
+    outline: 1px solid #999;
+}
+.row2col2-focused {
+    outline-color: #fff;
+    box-shadow: 0 0px 20px 2px #000;
 }
 .row-2 > .col-3 {
     height: 100%;

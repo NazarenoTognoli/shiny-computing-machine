@@ -1,7 +1,6 @@
-<app-window windowName="console">
+<app-window windowName="console" [headerStyle]="headerStyle">
     <header></header>
-    <textarea 
-        (input)="onInput($event)"
+    <textarea [value]="''"
         (keydown.enter)="onEnter($event)">
     </textarea>
 </app-window>

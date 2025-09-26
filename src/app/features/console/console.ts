@@ -18,6 +18,7 @@ export class Console {
     //console.log(value);
   }
   onEnter(event: Event) {
+    event.preventDefault();
     const textarea = event.target as HTMLTextAreaElement;
     const value = textarea.value;
     const arr = [...this.windowService.windows()];
